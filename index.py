@@ -14,6 +14,7 @@ from tools.curser_tool.curser import curser
 from tools.levelset_tool.levelset import levelset
 from tools.smartclickCNN_tool.smartclickCNN import smartclickCNN
 from tools.smartclickLevelset_tool.smartclickLevelset import smartclickLevelset
+from tools.cystLabel_tool.cystLabel import cystLabel
 from ui_MainWindow import *
 from utils.globalConstants import IMG_OBJ, MSK_OBJ, TOOL_OBJ
 from utils.utils import clamp
@@ -35,6 +36,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
             'brainLesionCNN': brainLesionCNN(),
             'smartclickCNN': smartclickCNN(),
             'smartclickLevelset': smartclickLevelset(),
+            'cystLabel': cystLabel(),
         })
 
         self.tool_buttons = OrderedDict({
@@ -44,6 +46,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
             'brainLesionCNN': self.ui.toolbar3_button,
             'smartclickCNN': self.ui.toolbar4_button,
             'smartclickLevelset': self.ui.toolbar5_button,
+            'cystLabel': self.ui.toolbar6_button,
         })
 
         # Toolbar actions
@@ -63,6 +66,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.tool_buttons['brainLesionCNN'].clicked.connect(lambda: set_tool(3, 'brainLesionCNN'))
         self.tool_buttons['smartclickCNN'].clicked.connect(lambda: set_tool(4, 'smartclickCNN'))
         self.tool_buttons['smartclickLevelset'].clicked.connect(lambda: set_tool(5, 'smartclickLevelset'))
+        self.tool_buttons['cystLabel'].clicked.connect(lambda: set_tool(6, 'cystLabel'))
 
         # Menubar actions
         self.ui.actionOpen_Image.triggered.connect(self.openImageAction)
