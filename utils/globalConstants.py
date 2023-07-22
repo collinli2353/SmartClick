@@ -155,22 +155,22 @@ class IMG_OBJ(metaclass=Singleton):
 
     def __str__(self):
         return f'''
-file_path: {self.FP}
-margin: {self.MARGIN}
-affine: {self.AFFINE}
-header: {self.HEADER}
-shape: {self.SHAPE}
-min_max_intensities: {self.MIN_MAX_INTENSITIES}
-window_value: {self.WINDOW_VALUE}
-level_value: {self.LEVEL_VALUE}
-foc_pos: {self.FOC_POS}
-zoom_factor: {self.ZOOM_FACTOR}
-shift: {self.SHIFT}
-img flip: {self.IMG_FLIP}
-orig rai code: {self.ORIG_RAI_CODE}
-current rai code: {self.CURRENT_RAI_CODE}
-viewer type: {self.VIEWER_TYPE}
-is dicom: {self.IS_DICOM}
+            file_path: {self.FP}
+            margin: {self.MARGIN}
+            affine: {self.AFFINE}
+            header: {self.HEADER}
+            shape: {self.SHAPE}
+            min_max_intensities: {self.MIN_MAX_INTENSITIES}
+            window_value: {self.WINDOW_VALUE}
+            level_value: {self.LEVEL_VALUE}
+            foc_pos: {self.FOC_POS}
+            zoom_factor: {self.ZOOM_FACTOR}
+            shift: {self.SHIFT}
+            img flip: {self.IMG_FLIP}
+            orig rai code: {self.ORIG_RAI_CODE}
+            current rai code: {self.CURRENT_RAI_CODE}
+            viewer type: {self.VIEWER_TYPE}
+            is dicom: {self.IS_DICOM}
         '''
 
     def FOC_POS_PERCENT(self):
@@ -180,6 +180,7 @@ class MSK_OBJ(metaclass=Singleton):
     MSK = None
     TEMP_MSK = None
     OPA = None
+    PREV_OPA = None
     LBL_IDS = [0, 1]
     CURRENT_LBL = 1
     maskChangeManager = maskManager()
@@ -219,11 +220,19 @@ class MSK_OBJ(metaclass=Singleton):
         if self.CURRENT_LBL == 0: return
         self.LBL_IDS.pop(self.LBL_IDS.index(self.CURRENT_LBL)+1)
 
+    def show_hide_label(self):
+        if self.OPA == 0:
+            self.OPA = self.PREV_OPA
+        else:
+            self.PREV_OPA = self.OPA
+            self.OPA = 0
+
+
     def __str__(self):
         return f'''
-opa: {self.OPA}
-lbl ids: {self.LBL_IDS}
-current lbl: {self.CURRENT_LBL}
+        opa: {self.OPA}
+        lbl ids: {self.LBL_IDS}
+        current lbl: {self.CURRENT_LBL}
         '''
 
 class TOOL_OBJ(metaclass=Singleton):
@@ -242,6 +251,6 @@ class TOOL_OBJ(metaclass=Singleton):
 
     def __str__(self):
         return f'''
-active tool index: {self.ACTIVE_TOOL_INDEX}
-active tool name: {self.ACTIVE_TOOL_NAME}
+        active tool index: {self.ACTIVE_TOOL_INDEX}
+        active tool name: {self.ACTIVE_TOOL_NAME}
         '''
