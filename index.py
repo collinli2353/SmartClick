@@ -288,7 +288,6 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.update()
 
     def hideSegmentationAction(self):
-        print("DKAF:")
         self.MSK_OBJ.show_hide_label()
         self.update()
 
@@ -348,11 +347,11 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         
         return new_foc_pos_2d
 
-    def keyPressEvent(self, event):
-        print(event.key(), 'pressed')
+    # def keyPressEvent(self, event):
+    #     print(event.key(), 'pressed')
 
-    def keyReleaseEvent(self, event):
-        print(event.key(), 'released')
+    # def keyReleaseEvent(self, event):
+    #     print(event.key(), 'released')
 
     def resizeEvent(self, event):
         self.update()
@@ -592,5 +591,6 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     window = MainWindow()
     sys.exit(app.exec())

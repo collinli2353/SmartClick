@@ -9,7 +9,8 @@ Shortcuts:
 - Pyinstaller
     - ``pyinstaller --onefile --icon='icons\Cornell_University_seal.ico' index.py``
 - [brain-segmentation-pytorch](https://github.com/mateuszbuda/brain-segmentation-pytorch)
-
+ 
+ 
 
 TODO
 - Stretch sag and cor
