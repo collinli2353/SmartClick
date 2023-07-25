@@ -74,6 +74,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.ui.actionSave_As.triggered.connect(self.saveAsImageAction)
         self.ui.actionUndo.triggered.connect(self.undoAction)
         self.ui.actionRedo.triggered.connect(self.redoAction)
+        self.ui.actionHide_Segmentation.triggered.connect(self.hideSegmentationAction)
         self.ui.actionReorient_Image.triggered.connect(self.openReorientDialog)
         self.ui.actionDebug.triggered.connect(self.debug)
         self.ui.actionSelect_Theme.triggered.connect(self.selectTheme)
@@ -284,6 +285,11 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
 
     def redoAction(self):
         self.MSK_OBJ.redo()
+        self.update()
+
+    def hideSegmentationAction(self):
+        print("DKAF:")
+        self.MSK_OBJ.show_hide_label()
         self.update()
 
     def openReorientDialog(self):
