@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>140</width>
-    <height>244</height>
+    <width>178</width>
+    <height>256</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,16 +144,16 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="winVal_label">
-       <property name="text">
-        <string>0</string>
+      <widget class="QSpinBox" name="winVal_spinBox">
+       <property name="maximum">
+        <number>2000</number>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QSlider" name="winVal_slider">
        <property name="minimum">
-        <number>-200</number>
+        <number>0</number>
        </property>
        <property name="maximum">
         <number>2000</number>
@@ -175,16 +175,16 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QLabel" name="levVal_label">
-       <property name="text">
-        <string>0</string>
+      <widget class="QSpinBox" name="levVal_spinBox">
+       <property name="maximum">
+        <number>2000</number>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QSlider" name="levVal_slider">
        <property name="minimum">
-        <number>-200</number>
+        <number>0</number>
        </property>
        <property name="maximum">
         <number>2000</number>

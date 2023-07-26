@@ -15,16 +15,23 @@ class curser(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.winVal_slider.valueChanged.connect(self.setWindowValue)
         self.ui.levVal_slider.valueChanged.connect(self.setLevelValue)
 
+        # connect winVal sliders to spinboxes
+        self.ui.winVal_slider.valueChanged.connect(self.ui.winVal_spinBox.setValue)
+        self.ui.winVal_spinBox.valueChanged.connect(self.ui.winVal_slider.setValue)
+
+        # connect levVal sliders to spinboxes
+        self.ui.levVal_slider.valueChanged.connect(self.ui.levVal_spinBox.setValue)
+        self.ui.levVal_spinBox.valueChanged.connect(self.ui.levVal_slider.setValue)
+
+
     def setWindowValue(self, value):
         self.IMG_OBJ.WINDOW_VALUE = value
         self.ui.winVal_slider.setValue(value)
-        self.ui.winVal_label.setText(str(value))
         self.IMG_OBJ.UPDATE_VIEWERS()
 
     def setLevelValue(self, value):
         self.IMG_OBJ.LEVEL_VALUE = value
         self.ui.levVal_slider.setValue(value)
-        self.ui.levVal_label.setText(str(value))
         self.IMG_OBJ.UPDATE_VIEWERS()
 
     def widgetMouseMoveEvent(self, event, axis):
