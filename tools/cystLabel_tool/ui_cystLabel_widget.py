@@ -49,14 +49,14 @@ class Ui_cystLabel_widget(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.lowerThresh_spinBox = QSpinBox(cystLabel_widget)
         self.lowerThresh_spinBox.setObjectName(u"lowerThresh_spinBox")
-        self.lowerThresh_spinBox.setMaximum(255)
+        self.lowerThresh_spinBox.setMaximum(2000)
 
         self.verticalLayout_2.addWidget(self.lowerThresh_spinBox)
 
         self.lowerThresh_slider = QSlider(cystLabel_widget)
         self.lowerThresh_slider.setObjectName(u"lowerThresh_slider")
         self.lowerThresh_slider.setMinimum(0)
-        self.lowerThresh_slider.setMaximum(255)
+        self.lowerThresh_slider.setMaximum(2000)
         self.lowerThresh_slider.setSingleStep(1)
         self.lowerThresh_slider.setOrientation(Qt.Horizontal)
 
@@ -74,16 +74,17 @@ class Ui_cystLabel_widget(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.upperThresh_spinBox = QSpinBox(cystLabel_widget)
         self.upperThresh_spinBox.setObjectName(u"upperThresh_spinBox")
-        self.upperThresh_spinBox.setMaximum(255)
-        self.upperThresh_spinBox.setValue(255)
+        self.upperThresh_spinBox.setMaximum(2000)
+        self.upperThresh_spinBox.setValue(2000)
 
         self.verticalLayout.addWidget(self.upperThresh_spinBox)
 
         self.upperThresh_slider = QSlider(cystLabel_widget)
         self.upperThresh_slider.setObjectName(u"upperThresh_slider")
         self.upperThresh_slider.setMinimum(0)
-        self.upperThresh_slider.setMaximum(255)
-        self.upperThresh_slider.setSliderPosition(255)
+        self.upperThresh_slider.setMaximum(2000)
+        self.upperThresh_slider.setValue(2000)
+        self.upperThresh_slider.setSliderPosition(2000)
         self.upperThresh_slider.setOrientation(Qt.Horizontal)
 
         self.verticalLayout.addWidget(self.upperThresh_slider)
