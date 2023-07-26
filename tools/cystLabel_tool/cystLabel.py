@@ -99,6 +99,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # rotate thresh 90 degrees
         thresh = np.rot90(thresh, 1)
 
+        # flip thresh vertically
+        thresh = np.flipud(thresh)
+        
         # change thresh into a 3d numpy array
         thresh = thresh[:, :, 1]
 
