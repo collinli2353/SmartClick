@@ -28,6 +28,8 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.setupUi(self)
         self.setupGlobalConstants()
 
+        self.DUP_ORIG_NP_IMG = 0
+        print("HEYOO")
         # connect sliders to spinboxes
         self.ui.lowerThresh_slider.valueChanged.connect(self.ui.lowerThresh_spinBox.setValue)
         self.ui.lowerThresh_spinBox.valueChanged.connect(self.ui.lowerThresh_slider.setValue)
@@ -41,6 +43,17 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.upperThresh_spinBox.valueChanged.connect(self.setContourMask)
 
     def setContourMask(self):
+        # if the type of self.DUP_ORIG_NP_IMG is not int, then it has been created
+
+        if(isinstance(self.DUP_ORIG_NP_IMG, int)):
+            self.DUP_ORIG_NP_IMG = self.IMG_OBJ.ORIG_NP_IMG.copy()
+            print("DUP ORIG NP IMG CREATED")
+
+        print("SHOULD BE UPDATED")
+        self.IMG_OBJ.ORIG_NP_IMG = self.DUP_ORIG_NP_IMG.copy()
+        # create duplicate of ORIG_NP_IMG
+        self.DUP_ORIG_NP_IMG = self.IMG_OBJ.ORIG_NP_IMG.copy()
+
         # set lower and upper threshold values called from spinbox
         lowerValue = self.ui.lowerThresh_spinBox.value()
         upperValue = self.ui.upperThresh_spinBox.value()
@@ -70,16 +83,40 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
+        
+        # normalize thresh to 0-1
+        thresh = thresh / 255.0
+        
+        # normalize image to MIN_MAX_INTENSITIES
+        thresh = thresh * (self.IMG_OBJ.MIN_MAX_INTENSITIES[1] - self.IMG_OBJ.MIN_MAX_INTENSITIES[0])
 
-        # display threshed image
-        plt.imshow(thresh, interpolation='nearest')
-        plt.show()
+        print(self.IMG_OBJ.MIN_MAX_INTENSITIES[0], " : ", self.IMG_OBJ.MIN_MAX_INTENSITIES[1])
+        print(np.max(thresh), " : ", np.min(thresh))
 
+        # TODO: change slider range to voxel intensity instead of 0-255
+        # TODO: Then remove the normalize to 0-255 and change lowerValue, upperValue too
 
-    def setContrast(self, img):
+        # rotate thresh 90 degrees
+        thresh = np.rot90(thresh, 1)
+
+        # change thresh into a 3d numpy array
+        thresh = thresh[:, :, 1]
+
+        # display threshed image by replacing NP_IMG with threshed image
+        self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = thresh
         
 
-        return img
+    def intensityLevel(self):
+        x, y, z = self.IMG_OBJ.FOC_POS
+        normalizedIntensity = self.IMG_OBJ.NP_IMG[x, y, z]
+        cv2Intensity = normalizedIntensity * 255
+        print(cv2Intensity)
+
+    def segmentButton(self):
+        # label all pixels within the mask as a cyst
+
+        # reset the image to the original image
+        self.IMG_OBJ.NP_IMG = self.IMG_OBJ.resetNPImg()
 
     def widgetMouseMoveEvent(self, event, axis):
         pass
