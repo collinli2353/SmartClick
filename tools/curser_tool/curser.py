@@ -65,13 +65,13 @@ class curser(QtWidgets.QWidget, default_tool, metaclass=Meta):
         return painter
 
     def widgetUpdate(self):
-        self.ui.curserX_label.setNum(self.IMG_OBJ.FOC_POS[0]+1)
-        self.ui.curserY_label.setNum(self.IMG_OBJ.FOC_POS[1]+1)
+        self.ui.curserX_label.setNum(self.IMG_OBJ.FOC_POS[0])
+        self.ui.curserY_label.setNum(self.IMG_OBJ.FOC_POS[1])
         self.ui.curserZ_label.setNum(self.IMG_OBJ.FOC_POS[2]+1)
 
-        self.ui.minIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[0], 2))
-        self.ui.maxIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[1], 2))
-        self.ui.curIntensity_label.setNum(round(self.IMG_OBJ.ORIG_NP_IMG[self.IMG_OBJ.FOC_POS[0], self.IMG_OBJ.FOC_POS[1], self.IMG_OBJ.FOC_POS[2]], 2))
+        self.ui.minIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[0], 3))
+        self.ui.maxIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[1], 3))
+        self.ui.curIntensity_label.setNum(round(self.IMG_OBJ.ORIG_NP_IMG[self.IMG_OBJ.FOC_POS[0], self.IMG_OBJ.FOC_POS[1], self.IMG_OBJ.FOC_POS[2]], 3))
 
         self.setWindowValue(int(self.IMG_OBJ.WINDOW_VALUE))
         self.setLevelValue(int(self.IMG_OBJ.LEVEL_VALUE))
