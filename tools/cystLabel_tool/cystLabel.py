@@ -125,16 +125,8 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
         # display threshed image by replacing NP_IMG with threshed image
         self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = thresh
-
         # alternate solution: originally used when contrast was still in use
         # self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = np.minimum(thresh, self.IMG_OBJ.ORIG_NP_IMG[:, :, z])
-        
-
-    def intensityLevel(self):
-        x, y, z = self.IMG_OBJ.FOC_POS
-        normalizedIntensity = self.IMG_OBJ.NP_IMG[x, y, z]
-        cv2Intensity = normalizedIntensity * 255
-        print(cv2Intensity)
 
     def segmentButton(self):
         # label all pixels within the mask as a cyst
