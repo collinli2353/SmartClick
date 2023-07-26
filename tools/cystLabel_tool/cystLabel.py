@@ -52,6 +52,8 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ORIG_slice = -1
 
     def setContourMask(self):
+        ''' Setting up ORIG image saving system '''
+
         # know the current coordinates
         x, y, z = self.IMG_OBJ.FOC_POS
 
@@ -70,23 +72,32 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # create duplicate of ORIG_NP_IMG to update in the future
         self.DUP_ORIG_NP_IMG = self.IMG_OBJ.ORIG_NP_IMG.copy()
 
-        
+
+
+        ''' Setting up image for thresholding '''
+
         # create a copy of the image
         img = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].copy()
 
         # change img from 3D to 2D array
         img = np.stack([img.T, img.T, img.T], axis=-1)
 
-        # normalize image to 0-255
-        img = ((255.0/img.max()) * img).astype('uint16')
-
         # set variables to min and max intensities
         min_intensity = self.IMG_OBJ.MIN_MAX_INTENSITIES[0]
         max_intensity = max(self.IMG_OBJ.MIN_MAX_INTENSITIES[1], 1)
 
+        # normalize image to 0-255
+        img = ((255.0/max_intensity) * img).astype('uint16')
+
+        # for images use img[y, x] instead of img[x, y]
+
         # normalize lowerValue and upperValue to 0-255
         lowerValue = int((255.0/max_intensity) * self.ORIG_lowerValue)
         upperValue = int((255.0/max_intensity) * self.ORIG_upperValue)
+
+
+
+        ''' Thresholding image '''
 
         # create a mask of the image within lower and upper threshold
         mask = cv2.inRange(img, (lowerValue, lowerValue, lowerValue), (upperValue, upperValue, upperValue))
@@ -98,8 +109,10 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         slice_min_intensity = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].min()
         slice_max_intensity = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].max()
 
+        ''' Converting threshed image to display image '''
+
         # denormalize thresh from 0-255 to min and max intensities of the slice
-        thresh = ((slice_max_intensity/255.0) * thresh).astype('int')
+        thresh = ((max_intensity/255.0) * thresh).astype('int')
 
         # rotate thresh 90 degrees
         thresh = np.rot90(thresh, 1)
