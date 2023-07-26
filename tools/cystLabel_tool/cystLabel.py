@@ -20,6 +20,7 @@ from utils.utils import theBrushPen, clamp, theCrossPen
 from matplotlib import pyplot as plt
 import cv2 as cv2
 from PIL import Image
+from numpy import unravel_index
 
 class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
     def __init__(self):
@@ -44,14 +45,13 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
     def setContourMask(self):
         # if the type of self.DUP_ORIG_NP_IMG is not int, then it has been created
-
         if(isinstance(self.DUP_ORIG_NP_IMG, int)):
             self.DUP_ORIG_NP_IMG = self.IMG_OBJ.ORIG_NP_IMG.copy()
-            print("DUP ORIG NP IMG CREATED")
-
-        print("SHOULD BE UPDATED")
+        
+        # update the image to the original image
         self.IMG_OBJ.ORIG_NP_IMG = self.DUP_ORIG_NP_IMG.copy()
-        # create duplicate of ORIG_NP_IMG
+        
+        # create duplicate of ORIG_NP_IMG to update in the future
         self.DUP_ORIG_NP_IMG = self.IMG_OBJ.ORIG_NP_IMG.copy()
 
         # set lower and upper threshold values called from spinbox
@@ -62,21 +62,19 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         x, y, z = self.IMG_OBJ.FOC_POS
         img = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].copy()
 
-        # set contrast of image
-        val_win = self.IMG_OBJ.WINDOW_VALUE
-        val_lev = self.IMG_OBJ.LEVEL_VALUE
-
-        val_max = val_lev + val_win / 2
-        val_min = val_lev - val_win / 2
-
-        img[img > val_max] = val_max
-        img[img < val_min] = val_min
-        img = (img - val_min)/(val_max-val_min+1e-5)
-
+        # change img from 3D to 2D array
         img = np.stack([img.T, img.T, img.T], axis=-1)
 
         # normalize image to 0-255
-        img = ((255.0/img.max()) * img).astype('uint8')
+        img = ((255.0/img.max()) * img).astype('uint16')
+
+        # set variables to min and max intensities
+        min_intensity = self.IMG_OBJ.MIN_MAX_INTENSITIES[0]
+        max_intensity = max(self.IMG_OBJ.MIN_MAX_INTENSITIES[1], 1)
+
+        # normalize lowerValue and upperValue to 0-255
+        lowerValue = int((255.0/max_intensity) * lowerValue)
+        upperValue = int((255.0/max_intensity) * upperValue)
 
         # create a mask of the image within lower and upper threshold
         mask = cv2.inRange(img, (lowerValue, lowerValue, lowerValue), (upperValue, upperValue, upperValue))
@@ -84,14 +82,12 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
         
-        # normalize thresh to 0-1
-        thresh = thresh / 255.0
-        
-        # normalize image to MIN_MAX_INTENSITIES
-        thresh = thresh * (self.IMG_OBJ.MIN_MAX_INTENSITIES[1] - self.IMG_OBJ.MIN_MAX_INTENSITIES[0])
+        # set current slice min and max intensities
+        slice_min_intensity = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].min()
+        slice_max_intensity = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].max()
 
-        print(self.IMG_OBJ.MIN_MAX_INTENSITIES[0], " : ", self.IMG_OBJ.MIN_MAX_INTENSITIES[1])
-        print(np.max(thresh), " : ", np.min(thresh))
+        # denormalize thresh from 0-255 to min and max intensities of the slice
+        thresh = ((slice_max_intensity/255.0) * thresh).astype('int')
 
         # TODO: change slider range to voxel intensity instead of 0-255
         # TODO: Then remove the normalize to 0-255 and change lowerValue, upperValue too
@@ -107,6 +103,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
         # display threshed image by replacing NP_IMG with threshed image
         self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = thresh
+
+        # alternate solution: originally used when contrast was still in use
+        # self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = np.minimum(thresh, self.IMG_OBJ.ORIG_NP_IMG[:, :, z])
         
 
     def intensityLevel(self):
@@ -131,4 +130,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         return painter
 
     def widgetUpdate(self):
-        pass
+        # constantly updates the function
+
+        # constantly update threshold values (auto thresholds each slice)
+        self.setContourMask()
