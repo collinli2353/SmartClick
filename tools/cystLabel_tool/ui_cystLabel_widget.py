@@ -140,17 +140,17 @@ class Ui_cystLabel_widget(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.upperThresh_spinBox = QSpinBox(cystLabel_widget)
         self.upperThresh_spinBox.setObjectName(u"upperThresh_spinBox")
-        self.upperThresh_spinBox.setMaximum(2000)
-        self.upperThresh_spinBox.setValue(2000)
+        self.upperThresh_spinBox.setMaximum(1500)
+        self.upperThresh_spinBox.setValue(1200)
 
         self.horizontalLayout_2.addWidget(self.upperThresh_spinBox)
 
         self.upperThresh_slider = QSlider(cystLabel_widget)
         self.upperThresh_slider.setObjectName(u"upperThresh_slider")
         self.upperThresh_slider.setMinimum(0)
-        self.upperThresh_slider.setMaximum(2000)
-        self.upperThresh_slider.setValue(2000)
-        self.upperThresh_slider.setSliderPosition(2000)
+        self.upperThresh_slider.setMaximum(1200)
+        self.upperThresh_slider.setValue(1200)
+        self.upperThresh_slider.setSliderPosition(1200)
         self.upperThresh_slider.setOrientation(Qt.Horizontal)
 
         self.horizontalLayout_2.addWidget(self.upperThresh_slider)

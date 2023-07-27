@@ -29,8 +29,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.setupUi(self)
         self.setupGlobalConstants()
 
+        # set duplicate to a non-image value so we know we haven't touched it yet
         self.DUP_ORIG_NP_IMG = 0
-        print("HEYOO")
+
         # connect sliders to spinboxes
         self.ui.lowerThresh_slider.valueChanged.connect(self.ui.lowerThresh_spinBox.setValue)
         self.ui.lowerThresh_spinBox.valueChanged.connect(self.ui.lowerThresh_slider.setValue)
@@ -42,14 +43,18 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.lowerThresh_spinBox.valueChanged.connect(self.setContourMask)
         self.ui.upperThresh_spinBox.valueChanged.connect(self.setContourMask)
 
+        # connect segment button to segmentButton
+        self.ui.segment.clicked.connect(self.segmentButton)
+
         # set variables to lower and upper threshold values
         self.lowerThresh = self.ui.lowerThresh_spinBox.value()
         self.upperThresh = self.ui.upperThresh_spinBox.value()
 
-        # set ORIG values to default values
+        # set ORIG values to default values (for updating purposes in widgetUpdate)
         self.ORIG_lowerValue = -1
         self.ORIG_upperValue = -1
         self.ORIG_slice = -1
+        self.thresh = -1
 
     def setContourMask(self):
         ''' Setting up ORIG image saving system '''
@@ -123,6 +128,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # change thresh into a 3d numpy array
         thresh = thresh[:, :, 1]
 
+        # set self.img to thresh
+        self.thresh = thresh
+
         # display threshed image by replacing NP_IMG with threshed image
         self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = thresh
         # alternate solution: originally used when contrast was still in use
@@ -130,9 +138,24 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
     def segmentButton(self):
         # label all pixels within the mask as a cyst
+        print("segmenting cysts")
 
+        # know the current coordinates
+        x, y, z = self.IMG_OBJ.FOC_POS
+
+        # find all non-zero pixels in img
+        non_zero_pixels = np.nonzero(self.thresh)
+        
+        # for each non-zero pixel, label it as a cyst in self.MSK_OBJ.MSK using numpy fancy indexing, TODO: replace brush function with this since it is faster
+        self.MSK_OBJ.MSK[non_zero_pixels[0], non_zero_pixels[1], z] = self.MSK_OBJ.CURRENT_LBL
+
+        print("finished segmenting cysts")
+
+
+    def resetButton(self):
         # reset the image to the original image
-        self.IMG_OBJ.NP_IMG = self.IMG_OBJ.resetNPImg()
+        self.ui.lowerThresh_spinBox.setValue(0)
+        
 
     def widgetMouseMoveEvent(self, event, axis):
         x, y, z, xx, yy, margin, shape = self.computePosition(event, axis)
