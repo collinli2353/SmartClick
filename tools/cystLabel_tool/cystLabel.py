@@ -138,8 +138,6 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         rightKidneyMask = 0
         kidneyMask = 0
 
-        print(self.leftKidney, " ", self.rightKidney)
-
         if(self.leftKidney != "None"):
             # get the kidney mask
             leftKidneyMask = np.where(currMask == self.leftKidney, 1, 0)
@@ -152,16 +150,12 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         kidneyMask = leftKidneyMask + rightKidneyMask
         kidneyMask = np.clip(kidneyMask, 0, 1)
 
-        print(kidneyMask.shape, " ", kidneyMask[0, 0])
-
+        # if the lower threshold is zero, we want to let the user see everything in the image
         if(self.ORIG_lowerValue > 0):
             # add the kidney mask to the mask but only where both kidney mask and mask are 1 using np.bitwise_and
             mask = mask & kidneyMask
             mask = mask.astype('int8')
 
-
-
-        print(mask.shape, " ", img.shape)
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
         
@@ -215,7 +209,6 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
             self.ui.upperThresh_spinBox.setValue(5000)
             self.toggle = True
         else:
-            print(self.PAST_lowerValue, " ", self.PAST_upperValue)
             # reset the image to the original image
             self.ui.lowerThresh_spinBox.setValue(self.PAST_lowerValue)
             self.ui.upperThresh_spinBox.setValue(self.PAST_upperValue)
