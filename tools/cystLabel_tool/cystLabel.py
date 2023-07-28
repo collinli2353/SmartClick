@@ -46,25 +46,34 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # connect segment button to segmentButton
         self.ui.segment.clicked.connect(self.segmentButton)
 
-        # set variables to lower and upper threshold values
-        self.lowerThresh = self.ui.lowerThresh_spinBox.value()
-        self.upperThresh = self.ui.upperThresh_spinBox.value()
+        # connect toggle button to toggleButton
+        self.ui.toggle.clicked.connect(self.toggleButton)   
 
         # set ORIG values to default values (for updating purposes in widgetUpdate)
         self.ORIG_lowerValue = -1
         self.ORIG_upperValue = -1
         self.ORIG_slice = -1
         self.thresh = -1
+        
+        self.toggle = False
+        self.PAST_lowerValue = -1
+        self.PAST_upperValue = -1
 
     def setContourMask(self):
+
+        print("running setContourMask")
         ''' Setting up ORIG image saving system '''
 
         # know the current coordinates
         x, y, z = self.IMG_OBJ.FOC_POS
 
+        # set past values to what they are before updating
+        self.PAST_lowerValue = self.ORIG_lowerValue
+        self.PAST_upperValue = self.ORIG_upperValue
+
         # set ORIG values to what they are currently
-        self.ORIG_lowerValue = self.ui.lowerThresh_spinBox.value()
-        self.ORIG_upperValue = self.ui.upperThresh_spinBox.value()
+        self.ORIG_lowerValue = int(self.ui.lowerThresh_spinBox.value())
+        self.ORIG_upperValue = int(self.ui.upperThresh_spinBox.value())
         self.ORIG_slice = z
 
         # if the type of self.DUP_ORIG_NP_IMG is not int, then it has been created
@@ -152,10 +161,19 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         print("finished segmenting cysts")
 
 
-    def resetButton(self):
-        # reset the image to the original image
-        self.ui.lowerThresh_spinBox.setValue(0)
-        
+    def toggleButton(self):
+
+        if(self.toggle == False):
+            # reset the image to the original image
+            self.ui.lowerThresh_spinBox.setValue(0)
+            self.ui.upperThresh_spinBox.setValue(5000)
+            self.toggle = True
+        else:
+            print(self.PAST_lowerValue, " ", self.PAST_upperValue)
+            # reset the image to the original image
+            self.ui.lowerThresh_spinBox.setValue(self.PAST_lowerValue)
+            self.ui.upperThresh_spinBox.setValue(self.PAST_upperValue)
+            self.toggle = False
 
     def widgetMouseMoveEvent(self, event, axis):
         x, y, z, xx, yy, margin, shape = self.computePosition(event, axis)
@@ -198,11 +216,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.minIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[0], 3))
         self.ui.maxIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[1], 3))
         self.ui.curIntensity_label.setNum(round(self.IMG_OBJ.ORIG_NP_IMG[self.IMG_OBJ.FOC_POS[0], self.IMG_OBJ.FOC_POS[1], self.IMG_OBJ.FOC_POS[2]], 3))
-
-        # set variables to lower and upper threshold values
-        self.lowerThresh = self.ui.lowerThresh_spinBox.value()
-        self.upperThresh = self.ui.upperThresh_spinBox.value()
-
+        
         # update threshold values (auto thresholds each slice) if current spinBox values are different from the original values or we are on a new slice
-        if(self.ORIG_lowerValue != self.lowerThresh or self.ORIG_upperValue != self.upperThresh or self.IMG_OBJ.FOC_POS[2] != self.ORIG_slice):
+        if(self.IMG_OBJ.FOC_POS[2] != self.ORIG_slice):
             self.setContourMask()

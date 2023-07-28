@@ -23,7 +23,7 @@ class Ui_cystLabel_widget(object):
     def setupUi(self, cystLabel_widget):
         if not cystLabel_widget.objectName():
             cystLabel_widget.setObjectName(u"cystLabel_widget")
-        cystLabel_widget.resize(185, 452)
+        cystLabel_widget.resize(185, 454)
         self.verticalLayout = QVBoxLayout(cystLabel_widget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.curser_verticalSpacer = QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -115,14 +115,14 @@ class Ui_cystLabel_widget(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.lowerThresh_spinBox = QSpinBox(cystLabel_widget)
         self.lowerThresh_spinBox.setObjectName(u"lowerThresh_spinBox")
-        self.lowerThresh_spinBox.setMaximum(2000)
+        self.lowerThresh_spinBox.setMaximum(5000)
 
         self.horizontalLayout.addWidget(self.lowerThresh_spinBox)
 
         self.lowerThresh_slider = QSlider(cystLabel_widget)
         self.lowerThresh_slider.setObjectName(u"lowerThresh_slider")
         self.lowerThresh_slider.setMinimum(0)
-        self.lowerThresh_slider.setMaximum(2000)
+        self.lowerThresh_slider.setMaximum(5000)
         self.lowerThresh_slider.setSingleStep(1)
         self.lowerThresh_slider.setOrientation(Qt.Horizontal)
 
@@ -140,17 +140,17 @@ class Ui_cystLabel_widget(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.upperThresh_spinBox = QSpinBox(cystLabel_widget)
         self.upperThresh_spinBox.setObjectName(u"upperThresh_spinBox")
-        self.upperThresh_spinBox.setMaximum(1500)
-        self.upperThresh_spinBox.setValue(1200)
+        self.upperThresh_spinBox.setMaximum(5000)
+        self.upperThresh_spinBox.setValue(5000)
 
         self.horizontalLayout_2.addWidget(self.upperThresh_spinBox)
 
         self.upperThresh_slider = QSlider(cystLabel_widget)
         self.upperThresh_slider.setObjectName(u"upperThresh_slider")
         self.upperThresh_slider.setMinimum(0)
-        self.upperThresh_slider.setMaximum(1200)
-        self.upperThresh_slider.setValue(1200)
-        self.upperThresh_slider.setSliderPosition(1200)
+        self.upperThresh_slider.setMaximum(5000)
+        self.upperThresh_slider.setValue(5000)
+        self.upperThresh_slider.setSliderPosition(5000)
         self.upperThresh_slider.setOrientation(Qt.Horizontal)
 
         self.horizontalLayout_2.addWidget(self.upperThresh_slider)
@@ -203,10 +203,20 @@ class Ui_cystLabel_widget(object):
 
         self.verticalLayout.addItem(self.curser_verticalSpacer_2)
 
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.toggle = QPushButton(cystLabel_widget)
+        self.toggle.setObjectName(u"toggle")
+
+        self.horizontalLayout_6.addWidget(self.toggle)
+
         self.segment = QPushButton(cystLabel_widget)
         self.segment.setObjectName(u"segment")
 
-        self.verticalLayout.addWidget(self.segment)
+        self.horizontalLayout_6.addWidget(self.segment)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
 
 
         self.retranslateUi(cystLabel_widget)
@@ -229,6 +239,7 @@ class Ui_cystLabel_widget(object):
         self.upperThresh_title.setText(QCoreApplication.translate("cystLabel_widget", u"Cyst Upper Threshold", None))
         self.curserIntensity_label_3.setText(QCoreApplication.translate("cystLabel_widget", u"Left Kidney", None))
         self.curserIntensity_label_2.setText(QCoreApplication.translate("cystLabel_widget", u"Right Kidney", None))
+        self.toggle.setText(QCoreApplication.translate("cystLabel_widget", u"Toggle", None))
         self.segment.setText(QCoreApplication.translate("cystLabel_widget", u"Segment", None))
     # retranslateUi
 
