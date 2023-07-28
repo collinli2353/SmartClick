@@ -39,21 +39,29 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.upperThresh_slider.valueChanged.connect(self.ui.upperThresh_spinBox.setValue)
         self.ui.upperThresh_spinBox.valueChanged.connect(self.ui.upperThresh_slider.setValue)
 
-        # connect spinboxes to setContourMask
+        # connect threshold spinboxes to setContourMask
         self.ui.lowerThresh_spinBox.valueChanged.connect(self.setContourMask)
         self.ui.upperThresh_spinBox.valueChanged.connect(self.setContourMask)
+
+        # connect kidney spinboxes to setContourMask
+        self.ui.leftKidney_spinBox.valueChanged.connect(self.setContourMask)
+        self.ui.rightKidney_spinBox.valueChanged.connect(self.setContourMask)
 
         # connect segment button to segmentButton
         self.ui.segment.clicked.connect(self.segmentButton)
 
         # connect toggle button to toggleButton
-        self.ui.toggle.clicked.connect(self.toggleButton)   
+        self.ui.toggle.clicked.connect(self.toggleButton)  
+
+
 
         # set ORIG values to default values (for updating purposes in widgetUpdate)
         self.ORIG_lowerValue = -1
         self.ORIG_upperValue = -1
         self.ORIG_slice = -1
         self.thresh = -1
+        self.leftKidney = -1
+        self.rightKidney = -1
         
         self.toggle = False
         self.PAST_lowerValue = -1
@@ -72,9 +80,13 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.PAST_upperValue = self.ORIG_upperValue
 
         # set ORIG values to what they are currently
-        self.ORIG_lowerValue = int(self.ui.lowerThresh_spinBox.value())
-        self.ORIG_upperValue = int(self.ui.upperThresh_spinBox.value())
+        self.ORIG_lowerValue = self.ui.lowerThresh_spinBox.value()
+        self.ORIG_upperValue = self.ui.upperThresh_spinBox.value()
         self.ORIG_slice = z
+        
+        # connect kidneys to the Kidney_comboBox
+        self.leftKidney = self.ui.leftKidney_spinBox.value() # should be 2
+        self.rightKidney = self.ui.rightKidney_spinBox.value() # should be1
 
         # if the type of self.DUP_ORIG_NP_IMG is not int, then it has been created
         if(isinstance(self.DUP_ORIG_NP_IMG, int)):
@@ -116,6 +128,40 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # create a mask of the image within lower and upper threshold
         mask = cv2.inRange(img, (lowerValue, lowerValue, lowerValue), (upperValue, upperValue, upperValue))
 
+
+        # add the kidneys to the mask
+        currMask = self.MSK_OBJ.MSK[:, :, z].copy()
+        currMask = np.stack([currMask.T, currMask.T, currMask.T], axis=-1)
+        currMask = currMask[:, :, 1]
+
+        leftKidneyMask = 0
+        rightKidneyMask = 0
+        kidneyMask = 0
+
+        print(self.leftKidney, " ", self.rightKidney)
+
+        if(self.leftKidney != "None"):
+            # get the kidney mask
+            leftKidneyMask = np.where(currMask == self.leftKidney, 1, 0)
+
+        if(self.rightKidney != "None"):
+            # get the kidney mask
+            rightKidneyMask = np.where(currMask == self.rightKidney, 1, 0)
+
+        # add the kidney masks together
+        kidneyMask = leftKidneyMask + rightKidneyMask
+        kidneyMask = np.clip(kidneyMask, 0, 1)
+
+        print(kidneyMask.shape, " ", kidneyMask[0, 0])
+
+        if(self.ORIG_lowerValue > 0):
+            # add the kidney mask to the mask but only where both kidney mask and mask are 1 using np.bitwise_and
+            mask = mask & kidneyMask
+            mask = mask.astype('int8')
+
+
+
+        print(mask.shape, " ", img.shape)
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
         
