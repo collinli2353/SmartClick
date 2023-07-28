@@ -15,15 +15,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QLabel, QPushButton, QSizePolicy, QSlider,
-    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+    QPushButton, QSizePolicy, QSlider, QSpacerItem,
+    QSpinBox, QVBoxLayout, QWidget)
 
 class Ui_cystLabel_widget(object):
     def setupUi(self, cystLabel_widget):
         if not cystLabel_widget.objectName():
             cystLabel_widget.setObjectName(u"cystLabel_widget")
-        cystLabel_widget.resize(185, 454)
+        cystLabel_widget.resize(182, 454)
         self.verticalLayout = QVBoxLayout(cystLabel_widget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.curser_verticalSpacer = QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -166,32 +166,36 @@ class Ui_cystLabel_widget(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.curserIntensity_label_3 = QLabel(cystLabel_widget)
-        self.curserIntensity_label_3.setObjectName(u"curserIntensity_label_3")
-        self.curserIntensity_label_3.setMaximumSize(QSize(16777215, 15))
+        self.leftKidney_Label = QLabel(cystLabel_widget)
+        self.leftKidney_Label.setObjectName(u"leftKidney_Label")
+        self.leftKidney_Label.setMaximumSize(QSize(16777215, 15))
 
-        self.horizontalLayout_5.addWidget(self.curserIntensity_label_3)
+        self.horizontalLayout_5.addWidget(self.leftKidney_Label)
 
-        self.segActiveLabel_combobox_2 = QComboBox(cystLabel_widget)
-        self.segActiveLabel_combobox_2.setObjectName(u"segActiveLabel_combobox_2")
+        self.leftKidney_spinBox = QSpinBox(cystLabel_widget)
+        self.leftKidney_spinBox.setObjectName(u"leftKidney_spinBox")
+        self.leftKidney_spinBox.setMaximum(5000)
+        self.leftKidney_spinBox.setValue(2)
 
-        self.horizontalLayout_5.addWidget(self.segActiveLabel_combobox_2)
+        self.horizontalLayout_5.addWidget(self.leftKidney_spinBox)
 
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_5)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.curserIntensity_label_2 = QLabel(cystLabel_widget)
-        self.curserIntensity_label_2.setObjectName(u"curserIntensity_label_2")
-        self.curserIntensity_label_2.setMaximumSize(QSize(16777215, 15))
+        self.rightKidney_label = QLabel(cystLabel_widget)
+        self.rightKidney_label.setObjectName(u"rightKidney_label")
+        self.rightKidney_label.setMaximumSize(QSize(16777215, 15))
 
-        self.horizontalLayout_4.addWidget(self.curserIntensity_label_2)
+        self.horizontalLayout_4.addWidget(self.rightKidney_label)
 
-        self.segActiveLabel_combobox = QComboBox(cystLabel_widget)
-        self.segActiveLabel_combobox.setObjectName(u"segActiveLabel_combobox")
+        self.rightKidney_spinBox = QSpinBox(cystLabel_widget)
+        self.rightKidney_spinBox.setObjectName(u"rightKidney_spinBox")
+        self.rightKidney_spinBox.setMaximum(5000)
+        self.rightKidney_spinBox.setValue(1)
 
-        self.horizontalLayout_4.addWidget(self.segActiveLabel_combobox)
+        self.horizontalLayout_4.addWidget(self.rightKidney_spinBox)
 
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
@@ -237,8 +241,8 @@ class Ui_cystLabel_widget(object):
         self.curIntensity_label.setText(QCoreApplication.translate("cystLabel_widget", u"#", None))
         self.lowerThresh_title.setText(QCoreApplication.translate("cystLabel_widget", u"Cyst Lower Threshold", None))
         self.upperThresh_title.setText(QCoreApplication.translate("cystLabel_widget", u"Cyst Upper Threshold", None))
-        self.curserIntensity_label_3.setText(QCoreApplication.translate("cystLabel_widget", u"Left Kidney", None))
-        self.curserIntensity_label_2.setText(QCoreApplication.translate("cystLabel_widget", u"Right Kidney", None))
+        self.leftKidney_Label.setText(QCoreApplication.translate("cystLabel_widget", u"Left Kidney", None))
+        self.rightKidney_label.setText(QCoreApplication.translate("cystLabel_widget", u"Right Kidney", None))
         self.toggle.setText(QCoreApplication.translate("cystLabel_widget", u"Toggle", None))
         self.segment.setText(QCoreApplication.translate("cystLabel_widget", u"Segment", None))
     # retranslateUi
