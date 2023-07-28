@@ -6,6 +6,7 @@ import numpy as np
 import PySide6
 from qt_material import *
 
+from PySide6 import QtCore, QtGui, QtWidgets
 from dialogs.reorientImageDialog import ReorientImageDialog
 from imageProcessWorker import ImageProcessWorker
 from tools.brainLesionCNN_tool.brainLesionCNN import brainLesionCNN
@@ -78,6 +79,11 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.ui.actionReorient_Image.triggered.connect(self.openReorientDialog)
         self.ui.actionDebug.triggered.connect(self.debug)
         self.ui.actionSelect_Theme.triggered.connect(self.selectTheme)
+
+        # timer
+        timer = QTimer(self, interval=1000, timeout=self.handle_timeout)
+        timer.start()
+        self.handle_timeout()
 
         # Window actions
         def show_all_frames():
@@ -486,6 +492,9 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
     # ================================================== #
     # Update Events ==================================== #
     # ================================================== #
+    def handle_timeout(self):
+        self.update()
+
     def update(self):
         self.update_scrollBarLabels()
         self.tools[self.TOOL_OBJ.ACTIVE_TOOL_NAME].widgetUpdate()
