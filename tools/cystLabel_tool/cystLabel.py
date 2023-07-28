@@ -203,7 +203,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
     def toggleButton(self):
 
-        if(self.toggle == False):
+        if(self.ORIG_lowerValue > 0 or self.ORIG_upperValue < 5000):
             # reset the image to the original image
             self.ui.lowerThresh_spinBox.setValue(0)
             self.ui.upperThresh_spinBox.setValue(5000)
@@ -256,6 +256,6 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.maxIntensity_label.setNum(round(self.IMG_OBJ.MIN_MAX_INTENSITIES[1], 3))
         self.ui.curIntensity_label.setNum(round(self.IMG_OBJ.ORIG_NP_IMG[self.IMG_OBJ.FOC_POS[0], self.IMG_OBJ.FOC_POS[1], self.IMG_OBJ.FOC_POS[2]], 3))
         
-        # update threshold values (auto thresholds each slice) if current spinBox values are different from the original values or we are on a new slice
-        if(self.IMG_OBJ.FOC_POS[2] != self.ORIG_slice):
+        # update threshold values (auto thresholds each slice) if we're on a new slice and threshold is on
+        if(self.IMG_OBJ.FOC_POS[2] != self.ORIG_slice and self.ORIG_lowerValue > 0):
             self.setContourMask()
