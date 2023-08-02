@@ -122,12 +122,14 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         upperValue = int((255.0/max_intensity) * self.ORIG_upperValue)
 
 
-
         ''' Thresholding image '''
 
         # create a mask of the image within lower and upper threshold
-        mask = cv2.inRange(img, (lowerValue, lowerValue, lowerValue), (upperValue, upperValue, upperValue))
+        ret, mask = cv2.threshold(img, lowerValue, upperValue, cv2.THRESH_BINARY)
 
+        mask = mask[:, :, 1]
+        mask = mask.clip(min=0, max=1)
+        mask = mask.astype('uint8')
 
         # add the kidneys to the mask
         currMask = self.MSK_OBJ.MSK[:, :, z].copy()
@@ -147,18 +149,42 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
             rightKidneyMask = np.where(currMask == self.rightKidney, 1, 0)
 
         # add the kidney masks together
-        kidneyMask = leftKidneyMask + rightKidneyMask
-        kidneyMask = np.clip(kidneyMask, 0, 1)
+        kidneyMask = leftKidneyMask | rightKidneyMask
+        kidneyMask = kidneyMask.astype('uint8')
 
         # if the lower threshold is zero, we want to let the user see everything in the image
         if(self.ORIG_lowerValue > 0):
             # add the kidney mask to the mask but only where both kidney mask and mask are 1 using np.bitwise_and
             mask = mask & kidneyMask
-            mask = mask.astype('int8')
+        
+        mask = mask.astype('uint8')
+
+        # morph open and close the image to get rid of noise
+        kernel = np.ones((3,3), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+        # remove all contours smaller than a certain size in a mask
+        size = 50 if mask.shape[0] > 256 else 8
+        contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        for i in range(len(contours)):
+            if(cv2.contourArea(contours[i]) < size):
+                cv2.drawContours(mask, [contours[i]], 0, 0, -1)
 
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
         
+
+        
+        
+        # # eliminate all contours smaller than a certain size in a mask
+        # contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        # for i in range(len(contours)):
+        #     if(cv2.contourArea(contours[i]) < 10):
+        #         cv2.drawContours(mask, [contours[i]], 0, 0, -1)
+
+
+
         # set current slice min and max intensities
         slice_min_intensity = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].min()
         slice_max_intensity = self.IMG_OBJ.ORIG_NP_IMG[:, :, z].max()
