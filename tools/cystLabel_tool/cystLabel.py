@@ -139,6 +139,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         leftKidneyMask = 0
         rightKidneyMask = 0
         kidneyMask = 0
+        cystMask = 0
 
         if(self.leftKidney != "None"):
             # get the kidney mask
@@ -148,8 +149,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
             # get the kidney mask
             rightKidneyMask = np.where(currMask == self.rightKidney, 1, 0)
 
+        cystmask = np.where(currMask == 20, 1, 0)
         # add the kidney masks together
-        kidneyMask = leftKidneyMask | rightKidneyMask
+        kidneyMask = leftKidneyMask | rightKidneyMask | cystmask
         kidneyMask = kidneyMask.astype('uint8')
 
         # if the lower threshold is zero, we want to let the user see everything in the image
@@ -159,13 +161,10 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         
         mask = mask.astype('uint8')
 
-        # morph open and close the image to get rid of noise
-        kernel = np.ones((3,3), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
 
         # remove all contours smaller than a certain size in a mask
-        size = 50 if mask.shape[0] > 256 else 8
+        size = 16 if mask.shape[0] > 256 else 4
         contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
         for i in range(len(contours)):
             if(cv2.contourArea(contours[i]) < size):
@@ -212,6 +211,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # self.IMG_OBJ.ORIG_NP_IMG[:, :, z] = np.minimum(thresh, self.IMG_OBJ.ORIG_NP_IMG[:, :, z])
 
     def segmentButton(self):
+
+        if(self.ui.lowerThresh_spinBox.value() == 0):
+            return
         # label all pixels within the mask as a cyst
         print("segmenting cysts")
 
