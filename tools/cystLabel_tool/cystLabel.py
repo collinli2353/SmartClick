@@ -132,7 +132,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         mask = mask.astype('uint8')
 
         # add the kidneys to the mask
-        currMask = self.MSK_OBJ.MSK[:, :, z].copy()
+        currMask = self.MSK_OBJ.MSK[:, :, z].copy().astype('uint16')
         currMask = np.stack([currMask.T, currMask.T, currMask.T], axis=-1)
         currMask = currMask[:, :, 1]
 
@@ -163,12 +163,10 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
 
 
-        # remove all contours smaller than a certain size in a mask
-        size = 16 if mask.shape[0] > 256 else 4
+        # fill all contours in mask
         contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
-        for i in range(len(contours)):
-            if(cv2.contourArea(contours[i]) < size):
-                cv2.drawContours(mask, [contours[i]], 0, 0, -1)
+        cv2.drawContours(mask, contours, -1, 1, thickness=-1)
+        
 
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
@@ -224,7 +222,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         non_zero_pixels = np.nonzero(self.thresh)
         
         # for each non-zero pixel, label it as a cyst in self.MSK_OBJ.MSK using numpy fancy indexing, TODO: replace brush function with this since it is faster
-        self.MSK_OBJ.MSK[non_zero_pixels[0], non_zero_pixels[1], z] = self.MSK_OBJ.CURRENT_LBL
+        self.MSK_OBJ.MSK[x, y, z] = int(self.MSK_OBJ.CURRENT_LBL)
+
+        print("CURRENT LABEL: ", self.MSK_OBJ.MSK[190, 300, z])
 
         print("finished segmenting cysts")
 
