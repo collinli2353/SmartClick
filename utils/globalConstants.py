@@ -188,8 +188,8 @@ class MSK_OBJ(metaclass=Singleton):
     maskChangeManager = maskManager()
 
     def __init__(self):
-        self.MSK = np.zeros([100, 100, 100])
-        self.TEMP_MSK = np.zeros([100, 100, 100])
+        self.MSK = np.zeros([100, 100, 100]).astype(np.uint16)
+        self.TEMP_MSK = np.zeros([100, 100, 100]).astype(np.uint16)
         self.OPA = 50
         self.LBL_IDS = [0, 1]
         self.CURRENT_LBL = 1
