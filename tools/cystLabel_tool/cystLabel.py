@@ -43,10 +43,6 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ui.lowerThresh_spinBox.valueChanged.connect(self.setContourMask)
         self.ui.upperThresh_spinBox.valueChanged.connect(self.setContourMask)
 
-        # connect kidney spinboxes to setContourMask
-        self.ui.leftKidney_spinBox.valueChanged.connect(self.setContourMask)
-        self.ui.rightKidney_spinBox.valueChanged.connect(self.setContourMask)
-
         # connect segment button to segmentButton
         self.ui.segment.clicked.connect(self.segmentButton)
 
@@ -62,6 +58,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.thresh = -1
         self.leftKidney = -1
         self.rightKidney = -1
+        self.liver = -1
         
         self.toggle = False
         self.PAST_lowerValue = -1
@@ -75,6 +72,10 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # know the current coordinates
         x, y, z = self.IMG_OBJ.FOC_POS
 
+        print(type(self.MSK_OBJ.CURRENT_LBL))
+        print(type(self.MSK_OBJ.MSK[0, 0, 0]))
+        print(self.MSK_OBJ.MSK[x, y, z])
+
         # set past values to what they are before updating
         self.PAST_lowerValue = self.ORIG_lowerValue
         self.PAST_upperValue = self.ORIG_upperValue
@@ -85,8 +86,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.ORIG_slice = z
         
         # connect kidneys to the Kidney_comboBox
-        self.leftKidney = self.ui.leftKidney_spinBox.value() # should be 2
-        self.rightKidney = self.ui.rightKidney_spinBox.value() # should be1
+        self.leftKidney = 2 #self.ui.leftKidney_spinBox.value() # should be 2
+        self.rightKidney = 1 #self.ui.rightKidney_spinBox.value() # should be1
+        self.liver = 4
 
         # if the type of self.DUP_ORIG_NP_IMG is not int, then it has been created
         if(isinstance(self.DUP_ORIG_NP_IMG, int)):
@@ -116,70 +118,73 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         img = ((255.0/max_intensity) * img).astype('uint16')
 
         # for images use img[y, x] instead of img[x, y]
-
+        
         # normalize lowerValue and upperValue to 0-255
         lowerValue = int((255.0/max_intensity) * self.ORIG_lowerValue)
-        upperValue = int((255.0/max_intensity) * self.ORIG_upperValue)
+        upperValue = min(int((255.0/max_intensity) * self.ORIG_upperValue), 255)
 
+        print(upperValue, "FDSLJKFKDFD", max_intensity)
 
         ''' Thresholding image '''
 
         # create a mask of the image within lower and upper threshold
-        ret, mask = cv2.threshold(img, lowerValue, upperValue, cv2.THRESH_BINARY)
+        mask = cv2.inRange(img, (lowerValue, lowerValue, lowerValue), (upperValue, upperValue, upperValue))
 
-        mask = mask[:, :, 1]
-        mask = mask.clip(min=0, max=1)
-        mask = mask.astype('uint8')
+        #ret, mask = cv2.threshold(img, lowerValue, upperValue, cv2.THRESH_BINARY)
+        # mask = mask[:, :, 1]
+        # mask = mask.clip(min=0, max=1)
+        # mask = mask.astype('uint8')
 
         # add the kidneys to the mask
         currMask = self.MSK_OBJ.MSK[:, :, z].copy().astype('uint16')
         currMask = np.stack([currMask.T, currMask.T, currMask.T], axis=-1)
         currMask = currMask[:, :, 1]
 
-        leftKidneyMask = 0
-        rightKidneyMask = 0
-        kidneyMask = 0
-        cystMask = 0
+        leftKidneyMask = np.zeros(currMask.shape, dtype='uint8')
+        rightKidneyMask = np.zeros(currMask.shape, dtype='uint8')
+        liverMask = np.zeros(currMask.shape, dtype='uint8')
+        cystMask = np.zeros(currMask.shape, dtype='uint8')
+        completeMask = np.zeros(currMask.shape, dtype='uint8')
 
-        if(self.leftKidney != "None"):
-            # get the kidney mask
+        # get the kidney mask
+        if(self.ui.leftKidney_toggle.isChecked()):
             leftKidneyMask = np.where(currMask == self.leftKidney, 1, 0)
 
-        if(self.rightKidney != "None"):
-            # get the kidney mask
+        # get the kidney mask
+        if(self.ui.rightKidney_toggle.isChecked()):
             rightKidneyMask = np.where(currMask == self.rightKidney, 1, 0)
 
+        # get the kidney mask
+        if(self.ui.liver_toggle.isChecked()):
+            liverMask = np.where(currMask == self.liver, 1, 0)
+
+        # get the cyst mask
         cystmask = np.where(currMask == 20, 1, 0)
-        # add the kidney masks together
-        kidneyMask = leftKidneyMask | rightKidneyMask | cystmask
-        kidneyMask = kidneyMask.astype('uint8')
+        
+        # add the masks together
+        completeMask = leftKidneyMask | rightKidneyMask | cystmask | liverMask
+        completeMask = completeMask.astype('uint8')
 
         # if the lower threshold is zero, we want to let the user see everything in the image
-        if(self.ORIG_lowerValue > 0):
+        if(self.ORIG_lowerValue > 0 or self.ORIG_upperValue < 5000):
             # add the kidney mask to the mask but only where both kidney mask and mask are 1 using np.bitwise_and
-            mask = mask & kidneyMask
+            mask = mask & completeMask
         
         mask = mask.astype('uint8')
-
-
 
         # fill all contours in mask
         contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
         cv2.drawContours(mask, contours, -1, 1, thickness=-1)
         
-
+        # semi see through mask
+        # mask = mask.astype('float')
+        # mask[mask == 0] = 0.0
+        # mask = mask[:, :, np.newaxis]
+        # thresh = img * mask
+        #thresh = thresh.astype('uint8')
+        
         # create bitwise image of mask and original image and convert from numpy array to grayscale
         thresh = cv2.bitwise_and(img, img, mask=mask)
-        
-
-        
-        
-        # # eliminate all contours smaller than a certain size in a mask
-        # contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
-        # for i in range(len(contours)):
-        #     if(cv2.contourArea(contours[i]) < 10):
-        #         cv2.drawContours(mask, [contours[i]], 0, 0, -1)
-
 
 
         # set current slice min and max intensities
@@ -222,9 +227,8 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         non_zero_pixels = np.nonzero(self.thresh)
         
         # for each non-zero pixel, label it as a cyst in self.MSK_OBJ.MSK using numpy fancy indexing, TODO: replace brush function with this since it is faster
-        self.MSK_OBJ.MSK[x, y, z] = int(self.MSK_OBJ.CURRENT_LBL)
+        self.MSK_OBJ.MSK[non_zero_pixels[0], non_zero_pixels[1], z] = self.MSK_OBJ.CURRENT_LBL
 
-        print("CURRENT LABEL: ", self.MSK_OBJ.MSK[190, 300, z])
 
         print("finished segmenting cysts")
 
