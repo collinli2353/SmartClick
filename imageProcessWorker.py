@@ -126,7 +126,7 @@ class ImageProcessWorker(QtCore.QThread):
         # RAI display letters
         painter.setPen(lettersPen(rgb(227, 170, 0)))
         size = 10
-        painter.setFont(QtGui.QFont('Robato', size, QtGui.QFont.Bold))
+        #painter.setFont(QtGui.QFont('Robato', size, QtGui.QFont.Bold))
         painter.drawText(pixmap.width()//2-size//2, 15, rai_display_letters[0]) # TOP
         painter.drawText(pixmap.width()-15, pixmap.height()//2+size//2, rai_display_letters[1]) # RIGHT
         painter.drawText(pixmap.width()//2-size//2, pixmap.height()-5, rai_display_letters[2]) # BOT
