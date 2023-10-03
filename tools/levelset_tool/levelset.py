@@ -191,3 +191,6 @@ class levelset(QtWidgets.QWidget, default_tool, metaclass=Meta):
         painter.drawLine(s_x+w,s_y+w,s_x+w,s_y)
 
         return painter
+    
+    def widgetMouseReleaseEvent(self, event):
+        pass

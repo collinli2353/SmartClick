@@ -64,6 +64,9 @@ class curser(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
         return painter
 
+    def widgetMouseReleaseEvent(self, event):
+        pass
+
     def widgetUpdate(self):
         self.ui.curserX_label.setNum(self.IMG_OBJ.FOC_POS[0])
         self.ui.curserY_label.setNum(self.IMG_OBJ.FOC_POS[1])

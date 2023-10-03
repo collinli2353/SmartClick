@@ -39,7 +39,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
             'smartclickCNN': smartclickCNN(),
             'smartclickLevelset': smartclickLevelset(),
             'cystLabel': cystLabel(),
-            'boudingBox': boundingBox(),
+            'boundingBox': boundingBox(),
         })
 
         self.tool_buttons = OrderedDict({
@@ -383,6 +383,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.botRight_labelMouseMoveEvent(event)
 
     def labelMouseReleaseevent(self, event):
+        self.tools[self.TOOL_OBJ.ACTIVE_TOOL_NAME].widgetMouseReleaseEvent(event)
         if self.TOOL_OBJ.ACTIVE_TOOL_NAME != 'curser': self.MSK_OBJ.updateMaskManager(self.MSK_OBJ.MSK)
 
     def labelMouseMoveEvent(self, event, axis):

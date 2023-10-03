@@ -71,6 +71,9 @@ class default_tool(ABC):
     def widgetDraw(self, pixmap: QtGui.QPixmap, new_foc: list, new_point: list, zoom: float, margin: list, spacing: list, newshape: list) -> PySide6.QtGui.QPainter: pass
 
     @abstractmethod
+    def widgetMouseReleaseEvent(self, event) -> None: pass
+
+    @abstractmethod
     def widgetUpdate(self) -> None: pass
     
 class Meta(type(QtWidgets.QWidget), type(ABC)):

@@ -49,7 +49,7 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         # connect toggle button to toggleButton
         self.ui.toggle.clicked.connect(self.toggleButton)  
 
-
+        
 
         # set ORIG values to default values (for updating purposes in widgetUpdate)
         self.ORIG_lowerValue = -1
@@ -176,6 +176,16 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
         contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
         cv2.drawContours(mask, contours, -1, 1, thickness=-1)
         
+        # remove all contours smaller than 20% of its enclosing circle (for the liver bile ducts)
+        if(self.ui.liver_toggle.isChecked()):
+            contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
+            for contour in contours:
+                circle = cv2.minEnclosingCircle(contour)
+                circleArea = np.pi * (circle[1] ** 2)
+                if(cv2.contourArea(contour)/circleArea < 0.20):
+                    cv2.drawContours(mask, [contour], -1, 0, thickness=-1)
+
+
         # semi see through mask
         # mask = mask.astype('float')
         # mask[mask == 0] = 0.0
@@ -275,6 +285,9 @@ class cystLabel(QtWidgets.QWidget, default_tool, metaclass=Meta):
                          int(new_foc[0]+spacing/2), int(margin[1]+newshape[1]))
 
         return painter
+
+    def widgetMouseReleaseEvent(self, event):
+        pass
 
     # constantly updates the functions in the widget
     def widgetUpdate(self): 

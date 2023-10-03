@@ -94,6 +94,9 @@ class brush(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
         self.TOOL_OBJ.INIT_MOUSE_POS[axis] = [event.x(), event.position().y()]
 
+    def widgetMouseReleaseEvent(self, event):
+        pass
+
     def widgetDraw(self, pixmap, new_foc, new_point, zoom, margin, spacing, newshape):
         painter = QtGui.QPainter(pixmap)
         painter.setPen(theBrushPen(lbl=self.MSK_OBJ.CURRENT_LBL))
