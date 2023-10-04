@@ -36,6 +36,9 @@ class boundingBox(QtWidgets.QWidget, default_tool, metaclass=Meta):
         self.predictor = SamPredictor(sam)
         self.Axis = 'axi'
         self.prevSlice = -1
+        self.logits = -1
+        self.scores = -1
+        self.newDraw = True
 
     def show_mask(self, mask, z, random_color=False):
         if random_color:
@@ -91,20 +94,51 @@ class boundingBox(QtWidgets.QWidget, default_tool, metaclass=Meta):
 
         self.predictor.set_image(image)
 
-        input_point = np.array([[220, 140]])
-        input_label = np.array([1])
+        pos_points = np.where(self.MSK_OBJ.MSK[:, :, z] == 1049)  # -1 is broadcast
+        neg_points = np.where(self.MSK_OBJ.MSK[:, :, z] == 1050)
+        
 
+        pos_points = np.column_stack((pos_points[0].ravel(), pos_points[1].ravel()))
+        neg_points = np.column_stack((neg_points[0].ravel(), neg_points[1].ravel()))
+
+        print(pos_points)
+        pos_labels = np.ones(len(pos_points))
+        neg_labels = np.zeros(len(neg_points))
+
+        input_points = np.concatenate((pos_points, neg_points), axis=0)
+        input_labels = np.concatenate((pos_labels, neg_labels), axis=0)
+
+        print(len(pos_labels))
+        print(input_points)
+        print(input_labels)
         # plt.figure(figsize=(10,10))
         # plt.imshow(image)
         # self.show_points(input_point, input_label, plt.gca())
         # plt.axis('on')
         # plt.show()  
 
-        masks, scores, logits = self.predictor.predict(
-        point_coords=input_point,
-        point_labels=input_label,
-        multimask_output=False,
-        )
+        logits = self.logits
+        scores = self.scores
+
+        if isinstance(logits, int):
+            masks, scores, logits = self.predictor.predict(
+            point_coords=input_points,
+            point_labels=input_labels,
+            multimask_output=False,
+            )
+        else:
+            mask_input = logits[np.argmax(scores), :, :]  # Choose the model's best mask
+
+            masks, scores, logits = self.predictor.predict(
+            point_coords=input_points,
+            point_labels=input_labels,
+            mask_input=mask_input[None, :, :],
+            multimask_output=False,
+            )
+
+        self.scores = scores
+        self.logits = logits
+
 
         print(masks.shape)
 
@@ -120,12 +154,13 @@ class boundingBox(QtWidgets.QWidget, default_tool, metaclass=Meta):
             self.show_mask(mask, z)
 
         self.prevSlice = z
+        self.newDraw = False
 
     def widgetMouseReleaseEvent(self, event):
         axis = self.Axis
         x, y, z = self.IMG_OBJ.FOC_POS
-        positive_label = 1008
-        negative_label = 1009
+        positive_label = 1049
+        negative_label = 1050
         if event.button() == Qt.MouseButton.LeftButton:
             if axis == 'axi': self.MSK_OBJ.MSK[x-1:x+1, y-1:y+1, z] = positive_label #positive label for SAM model
             elif axis == 'sag': self.MSK_OBJ.MSK[x, y-1:y+1, z-1:z+1] = positive_label #positive label for SAM model
@@ -136,7 +171,8 @@ class boundingBox(QtWidgets.QWidget, default_tool, metaclass=Meta):
             if axis == 'axi': self.MSK_OBJ.MSK[x-1:x+1, y-1:y+1, z] = negative_label #positive label for SAM model
             elif axis == 'sag': self.MSK_OBJ.MSK[x, y-1:y+1, z-1:z+1] = negative_label #positive label for SAM model
             elif axis == 'cor': self.MSK_OBJ.MSK[x-1:x+1, y, z-1:z+1] = negative_label #positive label for SAM model
-            
+        
+        self.newDraw = True
   
 
     
@@ -168,6 +204,7 @@ class boundingBox(QtWidgets.QWidget, default_tool, metaclass=Meta):
     # constantly updates the functions in the widget
     def widgetUpdate(self): 
         # update curser coordinates
-
-        if self.ui.rightKidney_spinBox.value() == 2 and self.prevSlice != self.IMG_OBJ.FOC_POS[2]:
+        if self.ui.rightKidney_spinBox.value() == 2 and self.newDraw:
             self.predictMask()
+        #if self.ui.rightKidney_spinBox.value() == 2 and self.prevSlice != self.IMG_OBJ.FOC_POS[2]:
+        #    self.predictMask()
