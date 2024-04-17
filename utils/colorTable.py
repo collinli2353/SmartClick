@@ -36,6 +36,7 @@ def mapLabelID2RGB(lbl_idx):
 
     lbl_idx = int(lbl_idx)
     hex_code = default_color_table[lbl_idx % len(default_color_table)]
+
     rgb = hexToRGB(hex_code)
 
     return rgb
@@ -46,6 +47,7 @@ def mapLabelsToColors(labels):
     for label in labels:
         lbl = int(label)
         color_code = default_color_table[lbl % len(default_color_table)]
+        
         rgb = hexToRGB(color_code)
         obj.update({lbl:rgb})
 

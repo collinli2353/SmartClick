@@ -116,7 +116,7 @@ class IMG_OBJ(metaclass=Singleton):
             self.AFFINE = self.NIBABEL_IMG.affine
             self.HEADER = self.NIBABEL_IMG.header
             self.SHAPE = self.ORIG_NP_IMG.shape
-            self.MIN_MAX_INTENSITIES = (self.NP_IMG.min(), self.NP_IMG.max())
+            self.MIN_MAX_INTENSITIES = (self.ORIG_NP_IMG.min(), self.ORIG_NP_IMG.max())
             self.WINDOW_VALUE = self.ORIG_NP_IMG.max() - self.ORIG_NP_IMG.min()
             self.LEVEL_VALUE = (self.ORIG_NP_IMG.max() + self.ORIG_NP_IMG.min()) / 2
             self.FOC_POS = [self.SHAPE[0] // 2, self.SHAPE[1] // 2, self.SHAPE[2] // 2]
@@ -152,6 +152,8 @@ class IMG_OBJ(metaclass=Singleton):
         self.IMG_FLIP['cor'][1] = not self.IMG_FLIP['cor'][1] # Flip cornal vertically
         self.IMG_FLIP['sag'][1] = not self.IMG_FLIP['sag'][1] # Flip saggital vertically
 
+    def resetNPImg(self):
+        self.NP_IMG = (self.ORIG_NP_IMG - self.ORIG_NP_IMG.min()) / (self.ORIG_NP_IMG.max() - self.ORIG_NP_IMG.min())
 
     def __str__(self):
         return f'''
@@ -186,8 +188,8 @@ class MSK_OBJ(metaclass=Singleton):
     maskChangeManager = maskManager()
 
     def __init__(self):
-        self.MSK = np.zeros([100, 100, 100])
-        self.TEMP_MSK = np.zeros([100, 100, 100])
+        self.MSK = np.zeros([100, 100, 100]).astype(np.uint16)
+        self.TEMP_MSK = np.zeros([100, 100, 100]).astype(np.uint16)
         self.OPA = 50
         self.LBL_IDS = [0, 1]
         self.CURRENT_LBL = 1

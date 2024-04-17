@@ -1,23 +1,29 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'curserWidgetptGDAF.ui'
+## Form generated from reading UI file 'curserWidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.1.0
+## Created by: Qt User Interface Compiler version 6.5.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+    QSizePolicy, QSlider, QSpacerItem, QSpinBox,
+    QVBoxLayout, QWidget)
 
 class Ui_curserWidget(object):
     def setupUi(self, curserWidget):
         if not curserWidget.objectName():
             curserWidget.setObjectName(u"curserWidget")
-        curserWidget.resize(140, 244)
+        curserWidget.resize(178, 256)
         self.verticalLayout = QVBoxLayout(curserWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.curser_verticalSpacer = QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -93,14 +99,15 @@ class Ui_curserWidget(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.winVal_label = QLabel(curserWidget)
-        self.winVal_label.setObjectName(u"winVal_label")
+        self.winVal_spinBox = QSpinBox(curserWidget)
+        self.winVal_spinBox.setObjectName(u"winVal_spinBox")
+        self.winVal_spinBox.setMaximum(2000)
 
-        self.horizontalLayout.addWidget(self.winVal_label)
+        self.horizontalLayout.addWidget(self.winVal_spinBox)
 
         self.winVal_slider = QSlider(curserWidget)
         self.winVal_slider.setObjectName(u"winVal_slider")
-        self.winVal_slider.setMinimum(-200)
+        self.winVal_slider.setMinimum(0)
         self.winVal_slider.setMaximum(2000)
         self.winVal_slider.setOrientation(Qt.Horizontal)
 
@@ -116,14 +123,15 @@ class Ui_curserWidget(object):
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.levVal_label = QLabel(curserWidget)
-        self.levVal_label.setObjectName(u"levVal_label")
+        self.levVal_spinBox = QSpinBox(curserWidget)
+        self.levVal_spinBox.setObjectName(u"levVal_spinBox")
+        self.levVal_spinBox.setMaximum(2000)
 
-        self.horizontalLayout_3.addWidget(self.levVal_label)
+        self.horizontalLayout_3.addWidget(self.levVal_spinBox)
 
         self.levVal_slider = QSlider(curserWidget)
         self.levVal_slider.setObjectName(u"levVal_slider")
-        self.levVal_slider.setMinimum(-200)
+        self.levVal_slider.setMinimum(0)
         self.levVal_slider.setMaximum(2000)
         self.levVal_slider.setOrientation(Qt.Horizontal)
 
@@ -149,8 +157,6 @@ class Ui_curserWidget(object):
         self.maxIntensity_label.setText(QCoreApplication.translate("curserWidget", u"#", None))
         self.curIntensity_label.setText(QCoreApplication.translate("curserWidget", u"#", None))
         self.label.setText(QCoreApplication.translate("curserWidget", u"Window Value", None))
-        self.winVal_label.setText(QCoreApplication.translate("curserWidget", u"0", None))
         self.label_2.setText(QCoreApplication.translate("curserWidget", u"Level Value", None))
-        self.levVal_label.setText(QCoreApplication.translate("curserWidget", u"0", None))
     # retranslateUi
 

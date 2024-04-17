@@ -3,10 +3,8 @@ numpy
 geodistk
 macholib
 matplotlib
-nibabel
 opencv-python
 pyinstaller
-pyqt6
 pyside6
 qt-material
 qt6-tools

@@ -55,5 +55,8 @@ class smartclickLevelset(QtWidgets.QWidget, default_tool, metaclass=Meta):
         
         return painter
 
+    def widgetMouseReleaseEvent(self, event):
+        pass
+        
     def widgetUpdate(self):
         pass

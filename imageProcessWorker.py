@@ -107,7 +107,7 @@ class ImageProcessWorker(QtCore.QThread):
         point_pos_2d = [pos*zoom_factor for pos in point_pos_2d]
 
         newshape = (round(shape[0] * zoom_factor), (round(shape[1] * zoom_factor)))
-        margin = ((size[0] - newshape[0]) // 2+shift_2d[0], (size[1] - newshape[1]) // 2+shift_2d[1])
+        margin = ((size[0] - newshape[0]) // 2+int(shift_2d[0]), (size[1] - newshape[1]) // 2+int(shift_2d[1]))
         scaled_img = img.resize(newshape, resample=Image.NEAREST)
         final_img = Image.new(scaled_img.mode, size, color='black')
         final_img.paste(scaled_img, margin)
@@ -126,7 +126,7 @@ class ImageProcessWorker(QtCore.QThread):
         # RAI display letters
         painter.setPen(lettersPen(rgb(227, 170, 0)))
         size = 10
-        painter.setFont(QtGui.QFont('Robato', size, QtGui.QFont.Bold))
+        #painter.setFont(QtGui.QFont('Robato', size, QtGui.QFont.Bold))
         painter.drawText(pixmap.width()//2-size//2, 15, rai_display_letters[0]) # TOP
         painter.drawText(pixmap.width()-15, pixmap.height()//2+size//2, rai_display_letters[1]) # RIGHT
         painter.drawText(pixmap.width()//2-size//2, pixmap.height()-5, rai_display_letters[2]) # BOT

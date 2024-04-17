@@ -6,6 +6,7 @@ import numpy as np
 import PySide6
 from qt_material import *
 
+from PySide6 import QtCore, QtGui, QtWidgets
 from dialogs.reorientImageDialog import ReorientImageDialog
 from imageProcessWorker import ImageProcessWorker
 from tools.brainLesionCNN_tool.brainLesionCNN import brainLesionCNN
@@ -14,6 +15,8 @@ from tools.curser_tool.curser import curser
 from tools.levelset_tool.levelset import levelset
 from tools.smartclickCNN_tool.smartclickCNN import smartclickCNN
 from tools.smartclickLevelset_tool.smartclickLevelset import smartclickLevelset
+from tools.cystLabel_tool.cystLabel import cystLabel
+from tools.boundingBox_tool.boundingBox import boundingBox
 from ui_MainWindow import *
 from utils.globalConstants import IMG_OBJ, MSK_OBJ, TOOL_OBJ
 from utils.utils import clamp
@@ -35,6 +38,8 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
             'brainLesionCNN': brainLesionCNN(),
             'smartclickCNN': smartclickCNN(),
             'smartclickLevelset': smartclickLevelset(),
+            'cystLabel': cystLabel(),
+            'boundingBox': boundingBox(),
         })
 
         self.tool_buttons = OrderedDict({
@@ -44,6 +49,8 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
             'brainLesionCNN': self.ui.toolbar3_button,
             'smartclickCNN': self.ui.toolbar4_button,
             'smartclickLevelset': self.ui.toolbar5_button,
+            'cystLabel': self.ui.toolbar6_button,
+            'boundingBox': self.ui.toolbar7_button,
         })
 
         # Toolbar actions
@@ -63,6 +70,8 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.tool_buttons['brainLesionCNN'].clicked.connect(lambda: set_tool(3, 'brainLesionCNN'))
         self.tool_buttons['smartclickCNN'].clicked.connect(lambda: set_tool(4, 'smartclickCNN'))
         self.tool_buttons['smartclickLevelset'].clicked.connect(lambda: set_tool(5, 'smartclickLevelset'))
+        self.tool_buttons['cystLabel'].clicked.connect(lambda: set_tool(6, 'cystLabel'))
+        self.tool_buttons['boundingBox'].clicked.connect(lambda: set_tool(7, 'boundingBox'))
 
         # Menubar actions
         self.ui.actionOpen_Image.triggered.connect(self.openImageAction)
@@ -74,6 +83,11 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.ui.actionReorient_Image.triggered.connect(self.openReorientDialog)
         self.ui.actionDebug.triggered.connect(self.debug)
         self.ui.actionSelect_Theme.triggered.connect(self.selectTheme)
+
+        # timer
+        timer = QTimer(self, interval=1000, timeout=self.handle_timeout)
+        timer.start()
+        self.handle_timeout()
 
         # Window actions
         def show_all_frames():
@@ -261,6 +275,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
 
     def openSegmentation(self, fp):
         msk = nib.load(fp).get_fdata()
+        msk = np.rint(msk).astype(np.uint16)
         self.MSK_OBJ.newMsk(msk)
         self.ui.segActiveLabel_combobox.clear()
         self.ui.segActiveLabel_combobox.addItems(['Label ' + str(i) for i in self.MSK_OBJ.LBL_IDS])
@@ -284,7 +299,6 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.update()
 
     def hideSegmentationAction(self):
-        print("DKAF:")
         self.MSK_OBJ.show_hide_label()
         self.update()
 
@@ -344,11 +358,11 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         
         return new_foc_pos_2d
 
-    def keyPressEvent(self, event):
-        print(event.key(), 'pressed')
+    # def keyPressEvent(self, event):
+    #     print(event.key(), 'pressed')
 
-    def keyReleaseEvent(self, event):
-        print(event.key(), 'released')
+    # def keyReleaseEvent(self, event):
+    #     print(event.key(), 'released')
 
     def resizeEvent(self, event):
         self.update()
@@ -369,6 +383,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
         self.botRight_labelMouseMoveEvent(event)
 
     def labelMouseReleaseevent(self, event):
+        self.tools[self.TOOL_OBJ.ACTIVE_TOOL_NAME].widgetMouseReleaseEvent(event)
         if self.TOOL_OBJ.ACTIVE_TOOL_NAME != 'curser': self.MSK_OBJ.updateMaskManager(self.MSK_OBJ.MSK)
 
     def labelMouseMoveEvent(self, event, axis):
@@ -403,6 +418,7 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
             self.openImage(fp)
         elif res in ('Load as Segmentation',''):
             self.openSegmentation(fp)
+            
 
     def dragEnterEvent(self, event): event.accept()
 
@@ -483,6 +499,9 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
     # ================================================== #
     # Update Events ==================================== #
     # ================================================== #
+    def handle_timeout(self):
+        self.update()
+
     def update(self):
         self.update_scrollBarLabels()
         self.tools[self.TOOL_OBJ.ACTIVE_TOOL_NAME].widgetUpdate()
@@ -588,5 +607,6 @@ class MainWindow(PySide6.QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     window = MainWindow()
     sys.exit(app.exec())

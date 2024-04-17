@@ -59,6 +59,9 @@ class brainLesionCNN(QtWidgets.QWidget, default_tool, metaclass=Meta):
     def widgetMouseMoveEvent(self, event, axis):
         pass
 
+    def widgetMouseReleaseEvent(self, event):
+        pass
+
     def widgetDraw(self, pixmap, new_foc, new_point, zoom, margin, spacing, newshape):
         painter = QtGui.QPainter(pixmap)
         return painter
